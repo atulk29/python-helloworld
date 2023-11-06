@@ -1,4 +1,3 @@
-# Python package
 # Create and test a Python package on multiple Python versions.
 # Add steps that analyze code, save the dist with the build record, publish to a PyPI-compatible index, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/python
@@ -34,3 +33,21 @@ steps:
     pip install pytest pytest-azurepipelines
     pytest
   displayName: 'pytest'
+
+# Python package
+- task: S3Upload@1
+  inputs:
+    awsCredentials: 'aws-azure-devops-connection'
+    regionName: 'ap-south-1'
+    bucketName: 'elasticbeanstalk-ap-south-1-011268973050'
+    globExpressions: '**'
+    createBucket: true
+    
+- task: BeanstalkDeployApplication@1
+  inputs:
+    awsCredentials: 'aws-azure-devops-connection'
+    regionName: 'ap-south-1'
+    applicationName: 'demo-app-01'
+    environmentName: 'test'
+    applicationType: 's3'
+    deploymentBundleBucket: 'elasticbeanstalk-ap-south-1-011268973050'
